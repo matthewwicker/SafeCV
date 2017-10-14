@@ -33,10 +33,7 @@ def UCB1(keypoint_distribution, plays_per_node, totalplays):
     for i in range(len(keypoint_distribution)):
         retval.append(keypoint_distribution[i] + math.sqrt(log(plays_per_node[i])/totalplays))
     retval = np.asarray(retval)
-    return retval/sum(retval)
-
-
-class DFMCS_Parameters(object):
+    return retval/sum(retvagit (object):
     def __init__(self, image, true_class, model, predshape = (1,224, 224, 3)):
         self.model = model
         self.ORIGINAL_IMAGE = copy.deepcopy(image)

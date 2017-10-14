@@ -4,22 +4,12 @@ sys.path.append('/usr/local/lib/python2.7/site-packages')
 import cv2
 import numpy as np
 from pomegranate import *
-import matplotlib as mpl
 import numpy as np
-import matplotlib.pyplot as plt
-from tqdm import trange
-from tqdm import tqdm
 import copy
 from copy import deepcopy
-
 import DFMCS
 from DFMCS import DFMCS
 from DFMCS import DFMCS_Parameters
-
-from keras.applications.inception_v3 import preprocess_input
-
-preprocess = preprocess_input
-
 import math
 
 def RUN_UCB(keypoint_distribution, plays_per_node, TOTAL_PLAYS):
