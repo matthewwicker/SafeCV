@@ -63,8 +63,8 @@ class TreeNode(object):
 
         x = d_x.sample()
         y = d_y.sample()
-	if(self.params.small_image):
-	    x/=self.params.inflation_constant
+        if(self.params.small_image):
+            x/=self.params.inflation_constant
             y/=self.params.inflation_constant
         
         if(x >= self.params.X_SHAPE):
@@ -84,7 +84,7 @@ class TreeNode(object):
                 if(attempts == 5):
                     break
                 x, y = self.visit_helper(self.kp_list[self.id])
-		try:
+                try:
                     if(((x,y) not in manip_list) and (list(self.params.MANIP(im[y][x], 3)) != list(im[y][x]))):
                         manip_list.append((x,y))
                         im[y][x] = self.params.MANIP(im[y][x], 3)
@@ -92,8 +92,8 @@ class TreeNode(object):
                         break
                     else:
                         attempts +=1
-		except:
-		    if(((x,y) not in manip_list) and ((self.params.MANIP(im[y][x], 3)) != (im[y][x]))):
+                except:
+                    if(((x,y) not in manip_list) and ((self.params.MANIP(im[y][x], 3)) != (im[y][x]))):
                         manip_list.append((x,y))
                         im[y][x] = self.params.MANIP(im[y][x], 3)
                         attempts = 0
@@ -141,39 +141,38 @@ class MCTS_Parameters(object):
         
         self.verbose = False
 
-	self.small_image = False
-	self.inflation_constant = 15
+        self.small_image = False
+        self.inflation_constant = 15
 
-	self.simulations_cutoff = 10
+        self.simulations_cutoff = 10
 
-	def preproc(im):
-		im_pred = im.reshape(self.predshape)
-                im_pred = im_pred.astype('float')
-                return im_pred	
+        def preproc(im):
+            im_pred = im.reshape(self.predshape)
+            im_pred = im_pred.astype('float')
+            return im_pred
 
-	self.preprocess = preproc
+        self.preprocess = preproc
 
-	def predi(im):
-	    im_pred = self.preprocess(im)
-	    prob = self.model.predict(im_pred, batch_size=1, verbose=0)
-	    pred = np.argmax(np.asarray(prob))
-	    return pred, prob       
+        def predi(im):
+            im_pred = self.preprocess(im)
+            prob = self.model.predict(im_pred, batch_size=1, verbose=0)
+            pred = np.argmax(np.asarray(prob))
+            return pred, prob
 
-	self.predict = predi
+        self.predict = predi
 
-	pred, prob = self.predict(image)
+        pred, prob = self.predict(image)
         self.PROBABILITY = max(max(prob))
 
-	self.backtracking_constant  = 10
+        self.backtracking_constant  = 10
 
 def SIFT_Filtered(image, parameters, threshold=0.00):
     
     # We need to expand the image to get good keypoints
     if(parameters.small_image):
-    	xs = parameters.X_SHAPE * parameters.inflation_constant
-        ys = parameters.Y_SHAPE * parameters.inflation_constant
-    	image = cv2.resize(image, (xs,ys))
-
+        xs = parameters.X_SHAPE * parameters.inflation_constant;
+        ys = parameters.Y_SHAPE * parameters.inflation_constant;
+        image = cv2.resize(image, (xs,ys))
     sift = cv2.xfeatures2d.SIFT_create()
     kp, des = sift.detectAndCompute(image,None)
 
@@ -261,7 +260,7 @@ def MCTS(params):
                 count_prior_saturation +=1
         
             if(MISCLASSIFIED == True):
-		print("Satisfied before simulation")
+                print("Satisfied before simulation")
                 adv = copy.deepcopy(IMAGE)
                 softmax = copy.deepcopy(prob)
                 severity = prior_severity
@@ -270,8 +269,8 @@ def MCTS(params):
                 adv, softmax, severity, kpd = DFMCS(dparams, cutoff=min_severity)
                 if(severity != -1):
                     severity += prior_severity
-            	elif(severity == -1 and count_searches == 1):
-		    break
+                elif(severity == -1 and count_searches == 1):
+                    break
             if((severity < min_severity or min_severity == -1) and severity != -1):
                 severities_over_time.append(severity)
                 min_severity = severity
@@ -317,7 +316,7 @@ def MCTS(params):
             
                
                 pred, prob = params.predict(IMAGE)
-		NEW_PROBABILITY = prob[0][pred]
+                NEW_PROBABILITY = prob[0][pred]
                 if(pred != int(params.TRUE_CLASS)):
                     MISCLASSIFIED = True
                     break
@@ -378,7 +377,7 @@ def MCTS(params):
         
             # Predict image class
             pred, prob = params.predict(IMAGE)
-	    NEW_PROBABILITY = prob[0][pred]
+            NEW_PROBABILITY = prob[0][pred]
             if(pred != int(params.TRUE_CLASS)):
                 MISCLASSIFIED = True
                 break

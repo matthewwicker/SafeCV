@@ -33,7 +33,8 @@ def UCB1(keypoint_distribution, plays_per_node, totalplays):
     for i in range(len(keypoint_distribution)):
         retval.append(keypoint_distribution[i] + math.sqrt(log(plays_per_node[i])/totalplays))
     retval = np.asarray(retval)
-    return retval/sum(retvagit (object):
+    return retval/sum(retval)
+class DFMCS_Parameters:
     def __init__(self, image, true_class, model, predshape = (1,224, 224, 3)):
         self.model = model
         self.ORIGINAL_IMAGE = copy.deepcopy(image)
@@ -43,42 +44,42 @@ def UCB1(keypoint_distribution, plays_per_node, totalplays):
         self.VISIT_CONSTANT = 50
         
         self.manip_method = white_manip
-        
+    
         self.X_SHAPE = 224
         self.Y_SHAPE = 224
         
         self.predshape = predshape
        
         self.EPSILON = 50
-        self.MANIPULATIONS = [] 
+        self.MANIPULATIONS = []
         self.TOTAL_PLAYS = 1
         self.PLAYS_ARRAY = np.ones(len(self.kp))
         self.MISCLASSIFIED = False
         
         self.verbose = False
 
-	self.small_image = False
-	self.inflation_constant = 15
+        self.small_image = False
+        self.inflation_constant = 15
 
-	self.kp, self.des, self.r = [],[],[]
+        self.kp, self.des, self.r = [],[],[]
 
         def preproc(im):
-		im_pred = IMAGE.reshape(params.predshape)
-                im_pred = im_pred.astype('float')
-                return image	
+            im_pred = IMAGE.reshape(params.predshape)
+            im_pred = im_pred.astype('float')
+            return image
 
-	self.preprocess = preproc
+        self.preprocess = preproc
 
-	def predi(im):
-	    im = self.preprocess(im)
-	    prob = self.model.predict(im_pred, batch_size=1, verbose=0)
+        def predi(im):
+            im = self.preprocess(im)
+            prob = self.model.predict(im_pred, batch_size=1, verbose=0)
 	    pred = np.argmax(np.asarray(prob))
-	    return pred, prob       
+	return pred, prob       
 
-	self.predict = predi
+        self.predict = predi
         pred, prob = self.predict(image)
         self.PROBABILITY = max(max(prob))
-	self.SOFT_MAX_ARRAY = prob
+        self.SOFT_MAX_ARRAY = prob
         self.backtracking_constant  = 10
         
     def __init__(self, MCTS_params, image):
@@ -105,15 +106,15 @@ def UCB1(keypoint_distribution, plays_per_node, totalplays):
         self.MISCLASSIFIED = False
         
         self.verbose = MCTS_params.verbose
-	self.preprocess = MCTS_params.preprocess
+        self.preprocess = MCTS_params.preprocess
         self.predict = MCTS_params.predict
-	self.small_image = MCTS_params.small_image
-	self.inflation_constant = 15
+        self.small_image = MCTS_params.small_image
+        self.inflation_constant = 15
 
         pred, prob = self.predict(image)
         self.PROBABILITY = max(max(prob))
-	self.SOFT_MAX_ARRAY = prob
-	self.backtracking_constant  = MCTS_params.backtracking_constant
+        self.SOFT_MAX_ARRAY = prob
+        self.backtracking_constant  = MCTS_params.backtracking_constant
 
 
 def SIFT_Filtered(image, parameters, threshold=0.00):
