@@ -1,6 +1,3 @@
-import sys
-sys.path.append('/usr/local/lib/python2.7/site-packages')
-
 import cv2
 import numpy as np
 from pomegranate import *
@@ -18,6 +15,7 @@ def RUN_UCB(keypoint_distribution, plays_per_node, TOTAL_PLAYS):
         retval.append(keypoint_distribution[i] + math.sqrt(log(plays_per_node[i])/TOTAL_PLAYS))
     retval = np.asarray(retval)
     return retval/sum(retval)
+
 
 class TreeNode(object):
     visited = False
@@ -60,13 +58,11 @@ class TreeNode(object):
         sigma += self.params.SIGMA_CONSTANT
         d_x = NormalDistribution(mu_x, sigma)
         d_y = NormalDistribution(mu_y, sigma)
-
         x = d_x.sample()
         y = d_y.sample()
         if(self.params.small_image):
             x/=self.params.inflation_constant
             y/=self.params.inflation_constant
-        
         if(x >= self.params.X_SHAPE):
             x = self.params.X_SHAPE-1
         elif(x < 0):
@@ -108,6 +104,7 @@ class TreeNode(object):
             x, y = self.visit_helper(self.kp_list[val])
             im[y][x] = MANIP(im[y][x], 3)
         return im
+
     def backprop(self, index, reward, severity):
         """ Updates the distribution based upon the
         reward passed in"""
@@ -117,33 +114,26 @@ class TreeNode(object):
             self.kp_dist[index] = 0
         self.kp_dist = self.kp_dist/sum(self.kp_dist)
         
-    
 
 def white_manipulation(val, dim):
     return [255, 255, 255]
+
 
 class MCTS_Parameters(object):
     def __init__(self, image, true_class, model, predshape = (1,224, 224, 3)):
         self.model = model
         self.ORIGINAL_IMAGE = copy.deepcopy(image)
         self.TRUE_CLASS = true_class
-
         self.MANIP = white_manipulation
         self.VISIT_CONSTANT = 100
         self.SIGMA_CONSTANT = 15
-
         self.X_SHAPE = 224
         self.Y_SHAPE = 224
-        
         self.predshape = predshape
-        
         self.kp, self.des, self.r = [],[],[]
-        
         self.verbose = False
-
         self.small_image = False
         self.inflation_constant = 15
-
         self.simulations_cutoff = 10
 
         def preproc(im):
@@ -160,14 +150,11 @@ class MCTS_Parameters(object):
             return pred, prob
 
         self.predict = predi
-
         pred, prob = self.predict(image)
         self.PROBABILITY = max(max(prob))
-
         self.backtracking_constant  = 10
 
 def SIFT_Filtered(image, parameters, threshold=0.00):
-    
     # We need to expand the image to get good keypoints
     if(parameters.small_image):
         xs = parameters.X_SHAPE * parameters.inflation_constant;
@@ -175,21 +162,17 @@ def SIFT_Filtered(image, parameters, threshold=0.00):
         image = cv2.resize(image, (xs,ys))
     sift = cv2.xfeatures2d.SIFT_create()
     kp, des = sift.detectAndCompute(image,None)
-
     #FILTER RESPONSES:
-
     responses = []
     for x in kp:
         responses.append(x.response)
     responses.sort()
-
     ret = []
     index_tracker = 0
     for x in kp:
         if(x.response >= threshold):
             ret.append((x, des[index_tracker], x.response))            
         index_tracker = index_tracker + 1
-        
     retval = sorted(ret, key=lambda tup: tup[2]) 
     return zip(*retval)
 
@@ -198,34 +181,23 @@ def MCTS(params):
     params.kp, params.des, params.r = SIFT_Filtered(params.ORIGINAL_IMAGE, params)
     params.r = np.asarray(params.r)
     params.r = params.r/sum(params.r)
-    
-
     root = TreeNode(params.kp, params.r, 0, 0, params)
-
     levels = [[root]]
     current_level = 0
-
     node = root
     manipulation = []
-
     visited = [root]
-
     severities_over_time = []
-
     IMAGE = copy.deepcopy(params.ORIGINAL_IMAGE)
     MISCLASSIFIED = False
-
     raw_searches = params.simulations_cutoff
     count_searches = 0
-
     min_severity = -1
     best_image = None
     severities_over_time = []
     raw_severities =  []
     avg_severities =  []
-
     count_prior_saturation = 0
-
     while(True):
         #print(count_searches)
         if(count_searches == raw_searches):
